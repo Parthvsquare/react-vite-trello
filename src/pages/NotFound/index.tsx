@@ -1,7 +1,11 @@
 import React from "react";
 
 function NotFound() {
-  return <div>No Routes found for this route</div>;
+  return (
+    <div className="h-full grid place-items-center">
+      <span>Sorry invalid route</span>
+    </div>
+  );
 }
 
 export default NotFound;

@@ -1,10 +1,10 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import { ModeToggle } from "./component/toggle-mode";
 import Board from "@/pages/Board";
 import HomeLayout from "@/pages/Home";
-import { Login } from "@/pages/Login";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import { useState } from "react";
-import { Navigate, Route, Routes, createBrowserRouter } from "react-router-dom";
-import { ModeToggle } from "./component/toggle-mode";
 
 const AppRouter = () => {
   const [collapsed, setCollapsed] = useState(true);
@@ -12,8 +12,8 @@ const AppRouter = () => {
   return (
     <div style={{ height: "100vh" }}>
       {/* <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} /> */}
-      <header className="site-layout-header">
-        <div className="flex justify-between px-10 py-3">
+      <header className="dark:bg-gray-800 bg-gray-100 dark:text-white">
+        <div className="flex justify-between px-10 py-3 items-center">
           <div className="flex gap-x-3">
             <div className="">
               <div className="">Logo</div>

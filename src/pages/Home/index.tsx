@@ -4,14 +4,7 @@ import { Outlet } from "react-router-dom";
 
 function HomeLayout() {
   return (
-    <div
-      style={{
-        margin: "24px 16px",
-        padding: 24,
-        minHeight: 280,
-        overflow: "scroll",
-      }}
-    >
+    <div className="dark:bg-gray-900 bg-white dark:text-white h-full">
       <Suspense fallback={<Skeleton />}>
         <Outlet />
       </Suspense>
