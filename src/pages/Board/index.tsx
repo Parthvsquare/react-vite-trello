@@ -3,7 +3,7 @@ import { useTodoStore } from "@/utils/store";
 import { DragDropContext } from "@hello-pangea/dnd";
 import BoardContainer from "@/components/BoardContainer";
 
-function App() {
+function Board() {
   const { filterTodoData, updateTodoData } = useTodoStore((state) => ({
     todoData: state.todoData,
     filterTodoData: state.filterTodoData,
@@ -65,4 +65,4 @@ function App() {
   );
 }
 
-export default App;
+export default Board;
