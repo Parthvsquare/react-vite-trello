@@ -4,43 +4,55 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import BoardContainer from "@/components/BoardContainer";
 
 function Board() {
-  const { filterTodoData, updateTodoData } = useTodoStore((state) => ({
+  const { filterTodoData, updateTodoDataDrag, initialFilter } = useTodoStore((state) => ({
     todoData: state.todoData,
     filterTodoData: state.filterTodoData,
-    updateTodoData: state.updateTodoData,
+    updateTodoDataDrag: state.updateTodoDataDrag,
+    initialFilter: state.filtered,
   }));
 
-  const allType = ["todo", "in-progress", "QA", "done"];
+  useEffect(() => {
+    initialFilter();
+  }, []);
+
+  const allType = ["To Do", "Doing", "Done"];
 
   const [isMounted, setIsMounted] = useState(false);
 
   const onDragEnd = (result: any) => {
+    console.log("result", result);
     const dragId = result?.draggableId;
-    const { droppableId: destDroppableId, index: destIndex } = result?.destination;
+    const { droppableId: destinationDroppableId, index: destIndex } = result?.destination;
     const { droppableId: srcDroppableId, index: srcIndex } = result?.source;
 
-    if (destDroppableId === srcDroppableId && destIndex === srcIndex) {
+    if (destinationDroppableId === srcDroppableId && destIndex === srcIndex) {
       return;
     }
 
-    if (destDroppableId === srcDroppableId) {
-      const boardData = [...filterTodoData.get(destDroppableId)];
+    if (destinationDroppableId === srcDroppableId) {
+      const boardData = filterTodoData.get(destinationDroppableId) || [];
       const newBoardData = boardData.filter((details) => details.id !== dragId);
       const dragEle = boardData.find((details) => details.id === dragId);
-      newBoardData.splice(destIndex, 0, dragEle);
-      updateTodoData([...newBoardData], destDroppableId);
+      if (dragEle) {
+        newBoardData.splice(destIndex, 0, dragEle);
+        updateTodoDataDrag([...newBoardData], destinationDroppableId);
+      }
     }
 
-    if (destDroppableId !== srcDroppableId) {
-      const srcBoardData = [...filterTodoData.get(srcDroppableId)];
+    if (destinationDroppableId !== srcDroppableId) {
+      const srcBoardData = filterTodoData.get(srcDroppableId) || [];
       const newSrcData = srcBoardData.filter((details) => details.id !== dragId);
-      const dragEle = srcBoardData.find((details) => details.id === dragId);
-      dragEle.type = destDroppableId;
-      updateTodoData([...newSrcData], srcDroppableId);
+      const draggedElement = srcBoardData.find((details) => details.id === dragId);
+      if (!draggedElement) {
+        return;
+      }
+      draggedElement.type = destinationDroppableId;
 
-      const destBoardData = [...filterTodoData.get(destDroppableId)];
-      destBoardData.splice(destIndex, 0, dragEle);
-      updateTodoData([...destBoardData], destDroppableId);
+      console.log("===> ~ onDragEnd ~ [...newSrcData], srcDroppableId:", [...newSrcData], srcDroppableId);
+      updateTodoDataDrag([...newSrcData], srcDroppableId);
+      const destBoardData = filterTodoData.get(destinationDroppableId) || [];
+      destBoardData.splice(destIndex, 0, draggedElement);
+      updateTodoDataDrag([...destBoardData], destinationDroppableId);
     }
   };
 

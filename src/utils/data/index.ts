@@ -147,3 +147,5 @@ export const filterTodoData = DATASET.reduce((acc, task) => {
   const { type } = task;
   return acc.set(type, (acc.get(type) || []).concat(task));
 }, new Map());
+
+// default map of all the data

@@ -1,7 +1,19 @@
-import { PenIcon, Table } from "lucide-react";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "./ui/table";
+import { PlusCircle } from "lucide-react";
+import { TodoDetailsProps } from "@/utils/types";
+import TodoCard from "./TodoCard";
+import { Textarea } from "./ui/textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Droppable } from "@hello-pangea/dnd";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { v4 as uuid4 } from "uuid";
 import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { SetStateAction, useState } from "react";
+import { useTodoStore } from "@/utils/store";
 
 const invoices = [
   {
@@ -47,51 +59,92 @@ const invoices = [
     paymentMethod: "Credit Card",
   },
 ];
+interface IProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  data: TodoDetailsProps;
+}
 
-export function CheckoutTable() {
+export function EditTodo({ open, setOpen, data }: IProps) {
+  const updateTodoWithId = useTodoStore((state) => state.updateTodoWithId);
+
+  const formSchema = z.object({
+    name: z.string().min(2).max(50),
+    description: z.string().min(2).max(150),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: data.name,
+      description: data.description,
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const result = formSchema.safeParse(values);
+    if (!result.success) {
+      return;
+    } else {
+      console.log("===> ~ onSubmit ~ result:", result.data);
+      console.log("===> ~ onSubmit ~ result:", data);
+      updateTodoWithId(data.id, {
+        id: data.id,
+        type: data.type,
+        name: result.data.name,
+        description: result.data.description,
+      });
+
+      form.reset();
+      setOpen(false);
+    }
+  };
+
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <PenIcon className="w-4 h-4 transition-all cursor-pointer lg:hover:stroke-primary" />
-      </SheetTrigger>
-      <SheetContent className="w-11/12 lg:w-[60%] sm:max-w-none overflow-auto basic-scroll">
-        <SheetHeader>
-          <SheetTitle>Checkout Details</SheetTitle>
-          <SheetDescription>Make changes to your profile here. Click save when you are done.</SheetDescription>
-          <Table className="basic-scroll">
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="basic-scroll">
-              {invoices.map((invoice) => (
-                <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                  <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell>{invoice.paymentMethod}</TableCell>
-                  <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={3}>Total</TableCell>
-                <TableCell className="text-right">$2,500.00</TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </SheetHeader>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+    <Dialog open={open}>
+      <DialogTrigger asChild>
+        {/* <Button variant="ghost" className="h-auto p-0">
+          <PlusCircle className="transition-all cursor-pointer lg:hover:stroke-primary" />
+        </Button> */}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]" onClick={(e) => e.stopPropagation()}>
+        <DialogHeader>
+          <DialogTitle>Add Item</DialogTitle>
+          <DialogDescription>Add item in heading</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 space-y-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea id="description" placeholder="Description" className="col-span-3" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit">Submit</Button>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
