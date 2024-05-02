@@ -15,12 +15,9 @@ const formSchema = z.object({
     .refine((val) => /^[a-zA-Z\s]+$/.test(val), {
       message: "Title should only contain alphabets and spaces",
     }),
-  description: z
-    .string()
-    .min(25)
-    .refine((val) => val.trim().length >= 25, {
-      message: "Description should be at least 25 characters long",
-    }),
+  description: z.string().refine((val) => val.trim().length >= 25, {
+    message: "Description should be at least 25 characters long",
+  }),
 });
 
 export { type TodoDetailsProps, formSchema };

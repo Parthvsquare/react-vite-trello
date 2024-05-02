@@ -65,7 +65,7 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Add Todo</DialogTitle>
-                  <DialogDescription>Add Todo in {heading}</DialogDescription>
+                  <DialogDescription>Add item in {heading}</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 space-y-3">

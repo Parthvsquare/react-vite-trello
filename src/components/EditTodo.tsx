@@ -63,9 +63,9 @@ export function EditTodo({ open, setOpen, data }: IProps) {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Todo Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name" {...field} />
+                    <Input placeholder="Title" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
