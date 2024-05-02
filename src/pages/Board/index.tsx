@@ -75,9 +75,9 @@ function Board() {
   }
 
   return (
-    <div className="p-5 overflow-auto basic-scroll">
+    <div className="p-5 overflow-x-scroll">
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-5">
+        <div className="grid gap-5 grid-cols-3 min-w-[1050px]">
           {allType.map((name) => {
             return <BoardContainer key={name} heading={name} data={filterTodoData.get(name) || []} type={name} />;
           })}

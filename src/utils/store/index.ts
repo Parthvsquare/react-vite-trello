@@ -32,7 +32,7 @@ export const useTodoStore = create<TodoListState>()(
             };
           }
           return {
-            filterTodoData: state.filterTodoData.set(type, [data, ...state.filterTodoData.get(type)!]),
+            filterTodoData: state.filterTodoData.set(type, [...state.filterTodoData.get(type)!, data]),
             todoData: [...state.todoData, data],
           };
         });

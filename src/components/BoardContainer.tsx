@@ -14,10 +14,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { cn } from "@/utils/lib/utils";
+import { v4 as uuidv4 } from "uuid";
 
 interface IProps {
   heading: string;
-  // type: "todo" | "in-progress" | "QA" | "done";
   type: string;
   data: TodoDetailsProps[] | [];
 }
@@ -25,7 +25,6 @@ interface IProps {
 const BoardContainer = ({ heading, data, type }: IProps) => {
   const addList = useTodoStore((state) => state.addList);
   const [openModal, setOpenModal] = useState(false);
-  const id = useId();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,7 +37,7 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     addList(
       {
-        id: id,
+        id: uuidv4(),
         title: values.title,
         description: values.description,
         type: type,
@@ -53,7 +52,7 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
   return (
     <Droppable droppableId={type}>
       {(provided, snapshot) => (
-        <Card className="h-full w-[450px] shadow-sm" ref={provided.innerRef} {...provided.droppableProps}>
+        <Card className="h-full min-w-[350px] shadow-sm" ref={provided.innerRef} {...provided.droppableProps}>
           <CardHeader className="bg-background border-foreground/50 flex flex-row items-center justify-between border-b-[1px] border-solid py-3 rounded-t-lg">
             <CardTitle className="text-lg">{heading}</CardTitle>
             <Dialog open={openModal} onOpenChange={setOpenModal}>
@@ -104,7 +103,7 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
           </CardHeader>
           <CardContent
             className={cn(
-              "basic-scroll max-h-[calc(100vh-200px)] min-h-[350px] w-[450px] overflow-aut px-4 pt-6 transition-colors  duration-300 ease-in-out",
+              "basic-scroll max-h-[calc(100vh-200px)] min-h-[350px] min-w-[350px] overflow-aut px-4 pt-6 transition-colors  duration-300 ease-in-out",
               snapshot.isDraggingOver ? "bg-zinc-600 dark:bg-zinc-600" : "bg-zinc-100 dark:bg-zinc-800"
             )}
           >
