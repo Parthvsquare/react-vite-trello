@@ -29,21 +29,19 @@ export const useTodoStore = create<TodoListState>()(
           if (state.filterTodoData.get(type) === undefined || state.filterTodoData.get(type) === null || state.filterTodoData.get(type)?.length === 0) {
             return {
               filterTodoData: state.filterTodoData.set(type, [data]),
+              todoData: [...state.todoData, data],
             };
           }
           return {
             filterTodoData: state.filterTodoData.set(type, [data, ...state.filterTodoData.get(type)!]),
+            todoData: [...state.todoData, data],
           };
         });
       },
-      updateTodoDataDrag: (data: TodoDetailsProps[], type) => set((state) => ({ filterTodoData: state.filterTodoData.set(type, [...data]) })),
+      updateTodoDataDrag: (data: TodoDetailsProps[], type) =>
+        set((state) => ({ filterTodoData: state.filterTodoData.set(type, [...data]), todoData: state.todoData.map((data) => (data.type === type ? data : data)) })),
       filtered: () => {
         set((state) => {
-          if (state.todoData.length === 0) {
-            return {
-              filterTodoData: DefaultTodoMap,
-            };
-          }
           return {
             filterTodoData: state.todoData.reduce((acc, task) => {
               const { type } = task;
@@ -55,14 +53,15 @@ export const useTodoStore = create<TodoListState>()(
       updateTodoWithId: (id: string, newData: TodoDetailsProps) => {
         set((state) => {
           const todoData = state.filterTodoData.get(newData.type)?.map((data) => (data.id === id ? newData : data));
-          console.log("===> ~ set ~ todoData:", todoData);
           if (!todoData) {
             return {
               filterTodoData: state.filterTodoData,
+              todoData: state.todoData.map((data) => (data.id === id ? newData : data)),
             };
           }
           return {
             filterTodoData: state.filterTodoData.set(newData.type, todoData),
+            todoData: state.todoData.map((data) => (data.id === id ? newData : data)),
           };
         });
       },

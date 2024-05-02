@@ -69,8 +69,12 @@ export function EditTodo({ open, setOpen, data }: IProps) {
   const updateTodoWithId = useTodoStore((state) => state.updateTodoWithId);
 
   const formSchema = z.object({
-    name: z.string().min(2).max(50),
-    description: z.string().min(2).max(150),
+    name: z
+      .string()
+      .min(2)
+      .max(50)
+      .regex(/^[A-Za-z]+$/, "Title should only contain alphabets"),
+    description: z.string().min(25).max(150),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({

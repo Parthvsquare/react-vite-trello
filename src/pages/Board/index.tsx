@@ -1,58 +1,69 @@
 import { useEffect, useState } from "react";
 import { useTodoStore } from "@/utils/store";
-import { DragDropContext } from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import BoardContainer from "@/components/BoardContainer";
 
 function Board() {
-  const { filterTodoData, updateTodoDataDrag, initialFilter } = useTodoStore((state) => ({
+  const { filterTodoData, updateTodoData, filterTodoFn } = useTodoStore((state) => ({
     todoData: state.todoData,
     filterTodoData: state.filterTodoData,
-    updateTodoDataDrag: state.updateTodoDataDrag,
-    initialFilter: state.filtered,
+    updateTodoData: state.updateTodoDataDrag,
+    filterTodoFn: state.filtered,
   }));
-
   useEffect(() => {
-    initialFilter();
+    filterTodoFn();
   }, []);
+  console.log("===> ~ file: index.tsx ~ line 10 ~ Board ~ filterTodoData", filterTodoData);
 
   const allType = ["To Do", "Doing", "Done"];
 
   const [isMounted, setIsMounted] = useState(false);
 
-  const onDragEnd = (result: any) => {
-    console.log("result", result);
-    const dragId = result?.draggableId;
-    const { droppableId: destinationDroppableId, index: destIndex } = result?.destination;
-    const { droppableId: srcDroppableId, index: srcIndex } = result?.source;
+  const onDragEnd = (result: DropResult) => {
+    if (!result) {
+      return;
+    }
+    const dragId = result.draggableId;
+    if (!result?.destination?.droppableId) {
+      return;
+    }
+    const { droppableId: destDroppableId, index: destIndex } = result.destination;
 
-    if (destinationDroppableId === srcDroppableId && destIndex === srcIndex) {
+    const { droppableId: srcDroppableId, index: srcIndex } = result.source;
+
+    if (destDroppableId === srcDroppableId && destIndex === srcIndex) {
       return;
     }
 
-    if (destinationDroppableId === srcDroppableId) {
-      const boardData = filterTodoData.get(destinationDroppableId) || [];
-      const newBoardData = boardData.filter((details) => details.id !== dragId);
-      const dragEle = boardData.find((details) => details.id === dragId);
-      if (dragEle) {
-        newBoardData.splice(destIndex, 0, dragEle);
-        updateTodoDataDrag([...newBoardData], destinationDroppableId);
+    if (destDroppableId === srcDroppableId) {
+      let boardData = [];
+      if (filterTodoData.get(destDroppableId)?.length === 0) {
+        boardData = filterTodoData.get(destDroppableId)!;
       }
+      boardData = [...filterTodoData.get(destDroppableId)!];
+      const newBoardData = boardData.filter((details) => details.id !== dragId);
+      const dragEle = boardData.find((details) => details.id === dragId)!;
+      newBoardData.splice(destIndex, 0, dragEle);
+      updateTodoData([...newBoardData], destDroppableId);
     }
 
-    if (destinationDroppableId !== srcDroppableId) {
-      const srcBoardData = filterTodoData.get(srcDroppableId) || [];
-      const newSrcData = srcBoardData.filter((details) => details.id !== dragId);
-      const draggedElement = srcBoardData.find((details) => details.id === dragId);
-      if (!draggedElement) {
-        return;
+    if (destDroppableId !== srcDroppableId) {
+      let srcBoardData = [];
+      if (filterTodoData.get(destDroppableId)?.length === 0) {
+        srcBoardData = filterTodoData.get(srcDroppableId)!;
       }
-      draggedElement.type = destinationDroppableId;
+      srcBoardData = [...filterTodoData.get(srcDroppableId)!];
+      const newSrcData = srcBoardData.filter((details) => details.id !== dragId);
+      const dragEle = srcBoardData.find((details) => details.id === dragId)!;
+      dragEle.type = destDroppableId;
+      updateTodoData([...newSrcData], srcDroppableId);
 
-      console.log("===> ~ onDragEnd ~ [...newSrcData], srcDroppableId:", [...newSrcData], srcDroppableId);
-      updateTodoDataDrag([...newSrcData], srcDroppableId);
-      const destBoardData = filterTodoData.get(destinationDroppableId) || [];
-      destBoardData.splice(destIndex, 0, draggedElement);
-      updateTodoDataDrag([...destBoardData], destinationDroppableId);
+      let destBoardData: any[] = [];
+      if (filterTodoData.get(destDroppableId)) {
+        destBoardData = [...filterTodoData.get(destDroppableId)!];
+      }
+      destBoardData.splice(destIndex, 0, dragEle);
+      updateTodoData([...destBoardData], destDroppableId);
     }
   };
 
@@ -66,7 +77,7 @@ function Board() {
 
   return (
     <div className="p-5 overflow-auto basic-scroll">
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
         <div className="flex gap-5">
           {allType.map((name) => {
             return <BoardContainer key={name} heading={name} data={filterTodoData.get(name) || []} type={name} />;
