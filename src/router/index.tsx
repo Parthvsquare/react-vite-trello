@@ -4,22 +4,16 @@ import Board from "@/pages/Board";
 import HomeLayout from "@/pages/Home";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
-import { useState } from "react";
 
 const AppRouter = () => {
-  const [collapsed, setCollapsed] = useState(true);
-
   return (
-    <div style={{ height: "100vh" }}>
+    <div className="h-screen">
       {/* <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} /> */}
       <header className="dark:bg-gray-800 bg-gray-100 dark:text-white">
         <div className="flex justify-between px-10 py-3 items-center">
           <div className="flex gap-x-3">
             <div className="">
-              <div className="">Logo</div>
-            </div>
-            <div className="">
-              <div className="">Header</div>
+              <div className="">React DnD</div>
             </div>
           </div>
           <ModeToggle />

@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { useTodoStore } from "@/utils/store";
+import { TodoDetailsProps, formSchema } from "@/utils/types";
+import { Droppable } from "@hello-pangea/dnd";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
-import { TodoDetailsProps } from "@/utils/types";
+import { useId, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import TodoCard from "./TodoCard";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Droppable } from "@hello-pangea/dnd";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useTodoStore } from "@/utils/store";
-import { v4 as uuid4 } from "uuid";
+import { cn } from "@/utils/lib/utils";
 
 interface IProps {
   heading: string;
@@ -25,16 +25,12 @@ interface IProps {
 const BoardContainer = ({ heading, data, type }: IProps) => {
   const addList = useTodoStore((state) => state.addList);
   const [openModal, setOpenModal] = useState(false);
-
-  const formSchema = z.object({
-    name: z.string().min(2).max(50),
-    description: z.string().min(2).max(150),
-  });
+  const id = useId();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      title: "",
       description: "",
     },
   });
@@ -42,8 +38,8 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     addList(
       {
-        id: uuid4(),
-        name: values.name,
+        id: id,
+        title: values.title,
         description: values.description,
         type: type,
       },
@@ -57,8 +53,8 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
   return (
     <Droppable droppableId={type}>
       {(provided, snapshot) => (
-        <Card className="h-full w-[350px] shadow-sm" ref={provided.innerRef} style={{ backgroundColor: snapshot.isDraggingOver ? "blue" : "grey" }} {...provided.droppableProps}>
-          <CardHeader className="bg-background border-foreground/50 flex flex-row items-center justify-between border-b-[1px] border-solid py-3">
+        <Card className="h-full w-[450px] shadow-sm" ref={provided.innerRef} {...provided.droppableProps}>
+          <CardHeader className="bg-background border-foreground/50 flex flex-row items-center justify-between border-b-[1px] border-solid py-3 rounded-t-lg">
             <CardTitle className="text-lg">{heading}</CardTitle>
             <Dialog open={openModal} onOpenChange={setOpenModal}>
               <DialogTrigger asChild>
@@ -68,17 +64,17 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Add Item</DialogTitle>
-                  <DialogDescription>Add item in {heading}</DialogDescription>
+                  <DialogTitle>Add Todo</DialogTitle>
+                  <DialogDescription>Add Todo in {heading}</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 space-y-3">
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>Todo Title</FormLabel>
                           <FormControl>
                             <Input placeholder="Name" {...field} />
                           </FormControl>
@@ -106,7 +102,12 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent className="basic-scroll max-h-[calc(100vh-200px)] min-h-[350px] w-[350px] overflow-auto bg-zinc-100 px-4 pt-6 dark:bg-zinc-800">
+          <CardContent
+            className={cn(
+              "basic-scroll max-h-[calc(100vh-200px)] min-h-[350px] w-[450px] overflow-aut px-4 pt-6 transition-colors  duration-300 ease-in-out",
+              snapshot.isDraggingOver ? "bg-zinc-600 dark:bg-zinc-600" : "bg-zinc-100 dark:bg-zinc-800"
+            )}
+          >
             {data.map((value: TodoDetailsProps, index) => {
               return <TodoCard key={value.id} details={value} order={index} />;
             })}

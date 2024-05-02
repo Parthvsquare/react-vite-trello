@@ -3,6 +3,8 @@ import { useTodoStore } from "@/utils/store";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import BoardContainer from "@/components/BoardContainer";
 
+const allType = ["To Do", "Doing", "Done"];
+
 function Board() {
   const { filterTodoData, updateTodoData, filterTodoFn } = useTodoStore((state) => ({
     todoData: state.todoData,
@@ -13,9 +15,6 @@ function Board() {
   useEffect(() => {
     filterTodoFn();
   }, []);
-  console.log("===> ~ file: index.tsx ~ line 10 ~ Board ~ filterTodoData", filterTodoData);
-
-  const allType = ["To Do", "Doing", "Done"];
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -77,7 +76,7 @@ function Board() {
 
   return (
     <div className="p-5 overflow-auto basic-scroll">
-      <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
+      <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-5">
           {allType.map((name) => {
             return <BoardContainer key={name} heading={name} data={filterTodoData.get(name) || []} type={name} />;

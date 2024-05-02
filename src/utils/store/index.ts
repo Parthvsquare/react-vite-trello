@@ -1,4 +1,3 @@
-import { DATASET, filterTodoData } from "@/utils/data";
 import { TodoDetailsProps } from "@/utils/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -9,6 +8,7 @@ interface TodoListState {
   addList: (data: TodoDetailsProps, type: string) => void;
   updateTodoDataDrag: (data: TodoDetailsProps[], type: string) => void;
   updateTodoWithId: (id: string, data: TodoDetailsProps) => void;
+  deleteTodoWithId: (id: string) => void;
   filtered: () => void;
 }
 
@@ -18,7 +18,6 @@ export const DefaultTodoMap = new Map<string, any>([
   ["Done", []],
 ]);
 
-// filterTodoData: state.filterTodoData.set(type, [data, ...state.filterTodoData.get(type)!]),
 export const useTodoStore = create<TodoListState>()(
   persist(
     (set) => ({
@@ -65,9 +64,18 @@ export const useTodoStore = create<TodoListState>()(
           };
         });
       },
+      deleteTodoWithId: (id: string) => {
+        set((state) => {
+          const todoData = state.todoData.filter((data) => data.id !== id);
+          const filterTodoData = new Map<string, TodoDetailsProps[]>(Array.from(state.filterTodoData.entries()).map(([key, value]) => [key, value.filter((data) => data.id !== id)]));
+          return { todoData, filterTodoData };
+        });
+      },
     }),
+
     {
       name: "todo-list",
+      partialize: (state) => Object.fromEntries(Object.entries(state).filter(([key]) => !["filteredTodoData"].includes(key))),
     }
   )
 );
