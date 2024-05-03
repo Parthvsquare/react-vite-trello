@@ -130,7 +130,7 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
           </CardHeader>
           <CardContent
             className={cn(
-              "overflow-y-scroll basic-scroll max-h-[calc(100vh-200px)] h-full min-w-[350px] overflow-aut px-4 pt-6 transition-colors  duration-300 ease-in-out",
+              "overflow-y-scroll basic-scroll max-h-[calc(100vh-200px)] h-full min-w-[350px] px-4 pt-6 transition-colors  duration-300 ease-in-out",
               snapshot.isDraggingOver ? "bg-zinc-600 dark:bg-zinc-600" : "bg-zinc-100 dark:bg-zinc-800"
             )}
           >
