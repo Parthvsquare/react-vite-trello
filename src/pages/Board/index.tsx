@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useTodoStore } from "@/utils/store";
 import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import BoardContainer from "@/components/BoardContainer";
-
-const allType = ["To Do", "Doing", "Done"];
+import { allType } from "@/utils/types";
 
 function Board() {
   const { filterTodoData, updateTodoData, filterTodoFn } = useTodoStore((state) => ({

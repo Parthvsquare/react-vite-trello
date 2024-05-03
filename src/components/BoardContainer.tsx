@@ -1,10 +1,12 @@
+import { cn } from "@/utils/lib/utils";
 import { useTodoStore } from "@/utils/store";
-import { TodoDetailsProps, formSchema } from "@/utils/types";
+import { TodoDetailsProps, allType, formSchema } from "@/utils/types";
 import { Droppable } from "@hello-pangea/dnd";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusCircle } from "lucide-react";
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import TodoCard from "./TodoCard";
 import { Button } from "./ui/button";
@@ -12,9 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Textarea } from "./ui/textarea";
-import { cn } from "@/utils/lib/utils";
-import { v4 as uuidv4 } from "uuid";
 
 interface IProps {
   heading: string;
@@ -40,9 +41,9 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
         id: uuidv4(),
         title: values.title,
         description: values.description,
-        type: type,
+        type: values.type ?? type,
       },
-      type
+      values.type ?? type
     );
 
     form.reset();
@@ -77,6 +78,32 @@ const BoardContainer = ({ heading, data, type }: IProps) => {
                           <FormControl>
                             <Input placeholder="Name" {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Todo type</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={type}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Todo Type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent defaultValue={type}>
+                              {allType.map((value, index) => {
+                                return (
+                                  <SelectItem value={value} key={index + value}>
+                                    {value}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}

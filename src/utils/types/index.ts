@@ -18,6 +18,9 @@ const formSchema = z.object({
   description: z.string().refine((val) => val.trim().length >= 25, {
     message: "Description should be at least 25 characters long",
   }),
+  type: z.string().optional(),
 });
 
-export { type TodoDetailsProps, formSchema };
+const allType = ["To Do", "Doing", "Done"];
+
+export { type TodoDetailsProps, formSchema, allType };
