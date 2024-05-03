@@ -9,7 +9,7 @@ const AppRouter = () => {
   return (
     <div className="h-screen">
       {/* <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} /> */}
-      <header className="dark:bg-gray-800 bg-gray-100 dark:text-white">
+      <header className="dark:bg-gray-800 bg-gray-100 dark:text-white fixed w-full h-auto">
         <div className="flex justify-between px-10 py-3 items-center">
           <div className="flex gap-x-3">
             <div className="">

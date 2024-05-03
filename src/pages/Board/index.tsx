@@ -74,7 +74,7 @@ function Board() {
   }
 
   return (
-    <div className="p-5 overflow-x-scroll">
+    <div className="p-5">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid gap-5 grid-cols-3 min-w-[1050px]">
           {allType.map((name) => {
